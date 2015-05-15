@@ -1,10 +1,10 @@
 package com.zx;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.test.bean.Student;
 import com.thoughtworks.xstream.XStream;
 
 public class XmlUtil {
@@ -53,19 +53,61 @@ public class XmlUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static String list2XmlString(List<?> list, Class clazz, String root)
+	public static String list2XmlString(List<?> list, Class clazz)
 	{
-		if(list == null || clazz == null || StringUtils.isEmpty(root))return null;
+		if(list == null || clazz == null )return null;
 		
-		StringBuffer sb = new StringBuffer();
-		sb.append("<"+root+">").append("\n");
-		for(Object bean : list)
-		{
-			sb.append(bean2XmlString(bean, clazz));
-		}
-		sb.append("\n").append("</"+root+">");
+		XStream xstream = new XStream();
+		xstream.processAnnotations(clazz);
+		String xml = xstream.toXML(list);
+		return xml;
+	}
+	
+	/**
+	 * map 集合转为 xml字符串
+	 * @param map
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String map2XmlString(Map map)
+	{
+		if(map == null)return null;
+		 
+		XStream xstream = new XStream();
+		String xml = xstream.toXML(map);
 		
-		return sb.toString();
+		return xml;
+	}
+	
+	/**
+	 * 定制bean 转为xml 字符串
+	 * 
+	 * @param xstream
+	 * @param bean
+	 * @return
+	 */
+	public static String custom2XmlString(XStream xstream, Object bean)
+	{
+		if(xstream == null || bean == null)return null;
+		return xstream.toXML(bean);
+	}
+	
+	/**
+	 * xml字符串 转为 list集合
+	 * 
+	 * @param xmlString
+	 * @param clazz
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static Object xmlString2List(String xmlString, Class clazz)
+	{
+		if(StringUtils.isEmpty(xmlString) || clazz == null)return null;
+		
+		XStream xstream = new XStream();
+		xstream.processAnnotations(clazz);
+		Object obj = xstream.fromXML(xmlString);
+		return obj;
 	}
 	
 }
